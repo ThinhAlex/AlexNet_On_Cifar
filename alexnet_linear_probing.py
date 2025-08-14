@@ -52,7 +52,7 @@ criterion = nn.CrossEntropyLoss()
 train_acc_list, train_loss_list, model = train(epochs, model, train_loader, criterion, optimizer, device)
 
 # save model
-save_model(model, "alexnet_transfer_cifar10.pth")
+save_model(model, "ckpt/alexnet_linear_probing.pth")
 print("=> Model saved!")
 
 
