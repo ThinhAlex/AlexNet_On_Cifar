@@ -145,33 +145,45 @@ def load_model(PATH):
     model = torch.load(PATH)
     return model
 
- 
-"""        
-### III. Recommended setup code
-# a. setup device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if __name__ == "__main__":   
+    ### III. Recommended setup code
+    # Setup device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# b. hyperparameters
-batch_size = 64
-learning_rate = 0.001
-epochs = 10
+    # Hyperparameters
+    batch_size = 64
+    learning_rate = 0.001
+    epochs = 10
 
-# c. setup dataset
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Resize((224,224), antialias=True),
-    transforms.RandomHorizontalFlip(),
-    transforms.Normalize((0.5,0.5,0.5), (0.2,0.2,0.2)),
-]) 
-train_data = datasets.CIFAR10(root = "dataset/", train=True, transform=transform, download = True)
-test_data = datasets.CIFAR10(root = "dataset/", train=False, transform=transform, download = True)
+    # Setup dataset
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Resize((224,224), antialias=True),
+        transforms.RandomHorizontalFlip(),
+        transforms.Normalize((0.5,0.5,0.5), (0.2,0.2,0.2)),
+    ]) 
+    train_data = datasets.CIFAR10(root = "dataset/", train=True, transform=transform, download = True)
+    test_data = datasets.CIFAR10(root = "dataset/", train=False, transform=transform, download = True)
 
-train_loader = DataLoader(train_data, batch_size=batch_size, shuffle = True)
-test_loader = DataLoader(test_data, batch_size=batch_size, shuffle = True)
+    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle = True)
+    test_loader = DataLoader(test_data, batch_size=batch_size, shuffle = True)
 
-# d. initialize model, loss, optimizer
-model = AlexNet().to(device)
-optimizer = optim.SGD(model.parameters(), lr = learning_rate, momentum=0.9)
-criterion = nn.CrossEntropyLoss()
-"""
+    # Initialize model, loss, optimizer
+    model = AlexNet().to(device)
+    optimizer = optim.SGD(model.parameters(), lr = learning_rate, momentum=0.9)
+    criterion = nn.CrossEntropyLoss()
+    
+    # Train model
+    train_acc_list, train_loss_list, model = train(epochs, model, train_loader, criterion, optimizer, device)
+
+    # Save model
+    save_model(model, "ckpt/alexnet_cifar10.pth")
+    
+    # Evaluate model
+    evaluate(model, test_loader, num_class=10, device=device)   
+    
+    # Show loss and accuracy
+    show_loss(train_loss_list, epochs)
+    show_acc(train_acc_list, epochs)
+    
 
